@@ -1,0 +1,35 @@
+{#========== phone number ================#}
+<script>
+    $('#phone-mask').inputmask({
+        "mask": "+\\9\\98(99) 999-99-99"
+    });
+    $('#messages-modal').modal('show');
+</script>
+{#============== regions -districts ============#}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#id_region").change(function () {
+            let region_id = $(this).val();
+            if (region_id) {
+                $.ajax({
+                    url: "{% url 'get_districts' %}",
+                    data: {'region_id': region_id},
+                    dataType: 'json',
+                    success: function (data) {
+                        let citySelect = $("#id_district");
+                        citySelect.empty();
+                        citySelect.append('<option value="">Tumanni tanlang</option>');
+                        $.each(data, function (index, district) {
+                            citySelect.append('<option value="' + district.id + '">' + district.name + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $("#id_description").empty();
+                $("#id_district").empty().append('<option value="">Avval viloyatni tanlang</option>');
+            }
+        });
+    });
+</script>
