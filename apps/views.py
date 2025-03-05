@@ -129,6 +129,7 @@ class ChangePasswordView(FormView):
 
         messages.success(self.request, 'Your password has been changed successfully.')
 
+
         return super().form_valid(form)
 
     def form_invalid(self, form):
