@@ -83,9 +83,8 @@
 
                         <div class="col-lg-6">
                             Siz haqingizda
-                            <textarea name="description" cols="40" rows="10" class="form-control" maxlength="399"
-                                      id="id_description">{% if request.user.description %}
-                                {{ request.user.description }}{% endif %}</textarea>
+                            <textarea name="about" cols="40" rows="10" class="form-control" maxlength="399"
+                                      id="id_description">{% if request.user.description %} {{ request.user.description }}{% endif %}</textarea>
                         </div>
 
                         <div class="col-12 d-flex justify-content-end">
@@ -107,19 +106,22 @@
                         <h5 class="mb-0">Parolni o'zgartirish</h5>
                     </div>
                     <div class="card-body bg-light">
-                        <form>
+                        <form action="{% url 'change-password' %}" method="post">
+                            {% csrf_token %}
                             <div class="mb-3">
+
+                                
                                 <label class="form-label" for="old-password">Oldingi parol</label>
-                                <input class="form-control" id="old-password" type="password">
+                                <input class="form-control" id="old" name="old" type="password">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="new-password">Yangi parol</label>
-                                <input class="form-control" id="new-password" type="password">
+                                <input class="form-control" id="new-password" name = "new" type="password">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="confirm-password">Yangi parolni
                                     takrorlash</label>
-                                <input class="form-control" id="confirm-password" type="password">
+                                <input class="form-control" id="confirm-password" name="confirm" type="password">
                             </div>
                             <button class="btn btn-primary d-block w-100" type="submit">Parolni yangilash
                             </button>

@@ -2,6 +2,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import Model, CharField, ForeignKey, DecimalField, ImageField, DateTimeField, CASCADE, TextField, \
     IntegerField, SET_NULL, BigIntegerField, TextChoices
+from django.db.models.fields import SlugField
+from django.utils.text import slugify
+
 
 class CustomUserManager(UserManager):
     def _create_user(self,phone_number, password, **extra_fields):
@@ -30,6 +33,23 @@ class CustomUserManager(UserManager):
 
         return self._create_user(phone_number, password, **extra_fields)
 
+class BaseSlugModel(Model):
+    name = CharField(max_length=255)
+    slug = SlugField(max_length=255, unique=True, blank=True, null=True)
+    class Meta:
+        abstract = True
+
+
+    def save(self, **kwargs):
+        slug = slugify(self.name)
+        i = 1
+
+        while Category.objects.filter(slug=slug).exists():
+            slug += f"-{i}"
+            i+=1
+        self.slug = slug
+        super().save()
+
 class User(AbstractUser):
     class RoleType(TextChoices):
         ADMIN = 'admin', 'Admin'
@@ -53,9 +73,12 @@ class District(Model):
     region = ForeignKey('apps.Region', on_delete=CASCADE)
 
 
-class Category(Model):
-    name = CharField(max_length=255)
+class Category(BaseSlugModel):
     icon = CharField(max_length=255)
+
+
+    def __str__(self):
+        return self.name
 
 class Product(Model):
     name = CharField(max_length=255)

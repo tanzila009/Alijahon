@@ -1,0 +1,129 @@
+{% extends 'apps/base/include.html' %}
+
+{% block body %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="container border-bottom-4">
+                <div class="header_tab_menu ">
+                    <div class="header_menu active" style="overflow: auto">
+                        <a href="{% url 'product-list' 'all' %}" class="btn btn-default {% if session_category == None %}active {% endif %}">
+                            Barchasi
+                        </a>
+                        {% for category in categories %}
+                            <a href="{% url 'product-list' category.slug %}" class="btn btn-default {% if session_category and session_category.pkk == category.slug %}active {% endif %}">
+                                {{ category.name }}
+                            </a>
+                        {% endfor %}
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="container" id="productsList">
+                <div class="content_grid">
+                    <div class="row">
+                        {% for product in products %}
+                            <div class="col-6 mb-3 col-md-6 col-lg-4">
+                                <div class="border rounded-1 d-flex flex-column justify-content-between pb-3">
+                                    <div class="overflow-hidden">
+                                        <div class="position-relative rounded-top overflow-hidden">
+                                            <a class="d-block" href="/product-detail/oyoq-kiyim-uchun-maxsus-shkaf"><img
+                                                    class="img-fluid rounded-top"
+                                                    src="{{ product.image.url }}" alt=""></a>
+                                        </div>
+                                        <div class="p-2">
+                                            <h5 class="fs-0"><a class="text-dark"
+                                                                href="/product-detail/oyoq-kiyim-uchun-maxsus-shkaf">{{ product.name }}</a></h5>
+                                            <p class="fs--1 mb-2"><a class="text-500" href="/category/uy-uchun">{{ product.category.name }}</a>
+                                            </p>
+                                            <h5 class="fs-md-2 text-warning mb-0 d-flex align-items-center mb-2"> {{ product.price }}
+                                                <!-- <del class="ms-2 fs--1 text-500">180 000 so'm </del> -->
+                                            </h5>
+                                            <p></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-between-center px-3">
+                                    <div><span class="fa fa-star text-warning"></span><span
+                                            class="fa fa-star text-warning"></span><span
+                                            class="fa fa-star text-warning"></span><span
+                                            class="fa fa-star text-warning"></span><span
+                                            class="fa fa-star text-300"></span><span class="ms-1">(8)</span>
+                                    </div>
+                                    <div><a class="btn btn-sm btn-falcon-default me-2" href="#!"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Add to Wish List"><span class="far fa-heart"></span></a><a
+                                            class="btn btn-sm btn-falcon-default" href="#!" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Add to Cart"><span
+                                            class="fas fa-cart-plus"></span></a></div>
+                                </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+
+
+
+
+
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+
+
+                                <li class="page-item"><a class="page-link " href="?page=1">1</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=2">2</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=3">3</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=4">4</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=5">5</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=6">6</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=7">7</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=8">8</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=9">9</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=10">10</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=11">11</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=12">12</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=13">13</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=14">14</a></li>
+
+
+                                <li class="page-item"><a class="page-link " href="?page=15">15</a></li>
+
+
+                                <li class="page-item"><a class="page-link" href="?page=2">Keyingisi</a></li>
+
+
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
