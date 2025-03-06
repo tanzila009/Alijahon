@@ -4,10 +4,11 @@ from django.contrib.auth.hashers import check_password
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
+# from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, FormView, ListView
+from django.views.generic import TemplateView, FormView, ListView, DetailView
 
 from apps.forms import AuthForm, ProfileForm, ChangePasswordForm
 from apps.models import User, District, Region, Category, Product, Wishlist
@@ -66,6 +67,8 @@ class HomeListView(ListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['products'] = Product.objects.all()
+        data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
+                                                                                                   flat=True)
         return data
 
 
@@ -147,17 +150,26 @@ class ProductListView(ListView):
         if slug != 'all':
             data['products'] = Product.objects.filter(category=category)
         data['categories'] = Category.objects.all()
+        data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id", flat=True)
         data['session_category'] = category
         return data
 
 class WishlistView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login')
-    liked = True
     def get(self, request, product_id):
+        liked = True
         like = Wishlist.objects.filter(product_id=product_id, user=self.request.user)
         if like.exists():
             like.delete()
+            liked = False
         else:
             Wishlist.objects.create(product_id=product_id, user=self.request.user)
 
-        return JsonResponse
+        return JsonResponse({"liked": liked})
+
+
+class ProductDetailView(DetailView):
+    queryset = Product.objects.all()
+    template_name = 'apps/order/product-detail.html'
+    slug_url_kwarg = 'slug'
+    context_object_name = 'products'

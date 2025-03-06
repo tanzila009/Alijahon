@@ -33,3 +33,28 @@
         });
     });
 </script>
+
+{#================== wishlist=================#}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+   document.querySelectorAll(".like-button").forEach(button => {
+       button.addEventListener("click", function () {
+           let productId = this.dataset.productId;
+           let button = this;
+
+           fetch(`/wishlist/${productId}`, {
+               method: "GET"
+           })
+           .then(response => response.json())
+           .then(data => {
+               if (data.liked) {
+                   button.classList.add("bg-danger");  // Like bosilgan boladi
+               } else {
+                   button.classList.remove("bg-danger"); // Unlike bozgaradi
+               }
+           });
+       });
+   });
+});
+</script>

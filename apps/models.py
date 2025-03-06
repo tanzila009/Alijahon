@@ -80,12 +80,13 @@ class Category(BaseSlugModel):
     def __str__(self):
         return self.name
 
-class Product(Model):
-    name = CharField(max_length=255)
+class Product(BaseSlugModel):
+    # name = CharField(max_length=255)
     description = TextField()
     price = DecimalField(max_digits=10, decimal_places=2)
     image = ImageField(upload_to='products/')
     category = ForeignKey('apps.Category', on_delete=CASCADE)
+
 
 class Wishlist(Model):
     user = ForeignKey(User, on_delete=CASCADE)

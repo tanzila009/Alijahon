@@ -1,11 +1,14 @@
 from django.urls import path, include
 
 from apps.views import AuthView, HomeListView, ProfileFormView, LogoutView, ProductListView, get_districts, \
-    ChangePasswordView
+    ChangePasswordView, WishlistView, ProductDetailView
 
 urlpatterns = [
     path('home', HomeListView.as_view(), name='home'),
     path('products/<str:slug>', ProductListView.as_view(), name='product-list'),
+    path('wishlist/<int:product_id>', WishlistView.as_view(), name='wishlist'),
+    path('product/detail/<str:slug>', ProductDetailView.as_view(), name='product-detail'),
+
 
 ]
 
