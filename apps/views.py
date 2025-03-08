@@ -10,8 +10,8 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, FormView, ListView, DetailView
 
-from apps.forms import AuthForm, ProfileForm, ChangePasswordForm
-from apps.models import User, District, Region, Category, Product, Wishlist
+from apps.forms import AuthForm, ProfileForm, ChangePasswordForm, OrderForm
+from apps.models import User, District, Region, Category, Product, Wishlist, AdminSetting
 
 
 class AuthView(FormView):
@@ -48,17 +48,6 @@ class AuthView(FormView):
         return super().form_invalid(form)
 
 
-"""
-
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/tanzila009/Alijahon.git
-git push -u origin main
-"""
-
-
 class HomeListView(ListView):
     queryset = Category.objects.all()
     template_name = 'apps/home.html'
@@ -67,7 +56,8 @@ class HomeListView(ListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['products'] = Product.objects.all()
-        data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
+        if self.request.user.is_authenticated:
+            data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
                                                                                                    flat=True)
         return data
 
@@ -105,9 +95,6 @@ def get_districts(request):
     region_id = request.GET.get('region_id')
     districts = District.objects.filter(region_id=region_id).values('id', 'name')
     return JsonResponse(list(districts), safe=False)
-
-
-# class CategoryListView(TemplateView):
 
 
 class ChangePasswordView(FormView):
@@ -149,8 +136,10 @@ class ProductListView(ListView):
         data = super().get_context_data(object_list=object_list, **kwargs)
         if slug != 'all':
             data['products'] = Product.objects.filter(category=category)
+        if self.request.user.is_authenticated:
+            data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
+                                                                                                   flat=True)
         data['categories'] = Category.objects.all()
-        data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id", flat=True)
         data['session_category'] = category
         return data
 
@@ -172,4 +161,31 @@ class ProductDetailView(DetailView):
     queryset = Product.objects.all()
     template_name = 'apps/order/product-detail.html'
     slug_url_kwarg = 'slug'
+    context_object_name = 'product'
+
+class LikeListView(ListView):
+    queryset = Wishlist.objects.all()
+    template_name = 'apps/menus/wishlist.html'
     context_object_name = 'products'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        data =  super().get_context_data(object_list=object_list, **kwargs)
+        data['products'] = Product.objects.filter(wishlist__user=self.request.user)
+        if self.request.user.is_authenticated:
+            data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
+                                                                                                   flat=True)
+        return data
+
+class OrderFormView(FormView):
+    form_class = OrderForm
+    template_name = 'apps/order/product-detail.html'
+    success_url = reverse_lazy('order')
+
+    def form_valid(self, form):
+        form.owner_id = self.request.user.id
+        order = form.save()
+        deliver_price = AdminSetting.objects.first().deliver_price
+        return render(self.request, 'apps/order/success.html', context={"order": order, "deliver_price": deliver_price})
+
+    def form_invalid(self, form):
+        pass

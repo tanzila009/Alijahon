@@ -1,6 +1,7 @@
-{% extends 'apps/base_include/base.html' %}
+{% extends 'apps/base/include.html' %}
 {% load humanize %}
-{% block main %}
+{% block body %}
+
     <div class="card mb-3 mt-2">
         <div class="card-body">
             <div class="col-lg-8 swiper-container">
@@ -9,7 +10,7 @@
                     {% csrf_token %}
                     <div class="mb-2">
                         <label class="form-label" for="formGroupNameInput">Ism:</label>
-                        <input class="form-control" name="name" id="formGroupNameInput" type="text">
+                        <input class="form-control" name="last_name" id="formGroupNameInput" type="text">
                     </div>
 
                     <div class="mb-4">

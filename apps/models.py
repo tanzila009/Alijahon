@@ -111,6 +111,7 @@ class Order(Model):
         DELIVERED = 'delivered', 'Delivered'
         NOT_PICK_UP = 'not_pick_up', 'Not Pick Up'
 
+    last_name = CharField(max_length=255)
     owner = ForeignKey('apps.User', on_delete=SET_NULL, null=True, blank=True)
     phone_number = CharField(max_length=20)
     ordered_at = DateTimeField(auto_now_add=True)
@@ -118,6 +119,10 @@ class Order(Model):
     product = ForeignKey('apps.Product', on_delete=CASCADE)
     quantity = IntegerField(default=1)
     status = CharField(max_length=20, choices=StatusType , default=StatusType.NEW)
+
+    @property
+    def amount_summa(self):
+        return self.quantity * self.product.price
 
 class Payment(Model):
     class StatusType(TextChoices):
@@ -131,3 +136,6 @@ class Payment(Model):
     payment_at = DateTimeField(auto_now_add=True)
     status = CharField(max_length=10, choices=StatusType , default=StatusType.REVIEW)
     description = TextField(blank=True, null=True)
+
+class AdminSetting(Model):
+    deliver_price = DecimalField(max_digits=5, decimal_places=2)

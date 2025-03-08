@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.models import User, Product, Region, District, Category
+from apps.models import User, Product, Region, District, Category, AdminSetting
 
 
 @admin.register(User)
@@ -22,4 +22,11 @@ class DistrictAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     pass
-# Register your models here.
+
+@admin.register(AdminSetting)
+class AdminSettingAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        max_instances = 1
+        if self.model.objects.count() >= max_instances:
+            return False
+        return super().has_add_permission(request)

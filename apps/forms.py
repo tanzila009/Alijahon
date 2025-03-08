@@ -1,3 +1,4 @@
+import re
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,11 +6,16 @@ from django.core.exceptions import ValidationError
 from django.forms import CharField, IntegerField
 from django.forms.forms import Form
 from django.forms.models import ModelForm
-from apps.models import User
+from apps.models import User, Order
+
 
 class AuthForm(Form):
     phone_number = CharField(max_length=20)
     password = CharField(max_length=255)
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+        return "+" + re.sub('\D', "", phone_number)
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
@@ -52,3 +58,16 @@ class ChangePasswordForm(Form):
     def update(self , user):
         password = self.cleaned_data.get('new')
         User.objects.filter(pk=user.id).update(password=password)
+
+class OrderForm(Form):
+    last_name = CharField(max_length=255)
+    phone_number = CharField(max_length=20)
+    product_id = IntegerField()
+    owner_id = IntegerField(required=False)
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+        return "+" + re.sub('\D', "", phone_number)
+
+    def save(self):
+        return Order.objects.create(**self.cleaned_data)
