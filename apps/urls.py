@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from apps.views import AuthView, HomeListView, ProfileFormView, LogoutView, ProductListView, get_districts, \
-    ChangePasswordView, WishlistView, ProductDetailView, LikeListView, OrderFormView
+    ChangePasswordView, WishlistView, ProductDetailView, LikeListView, OrderFormView, OrderListView
 
 urlpatterns = [
     path('home', HomeListView.as_view(), name='home'),
@@ -26,5 +26,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('order/form', OrderFormView.as_view(), name='order')
+    path('order/form', OrderFormView.as_view(), name='order'),
+    path('order/list', OrderListView.as_view(), name='order-list')
 ]

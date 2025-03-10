@@ -5,7 +5,6 @@ from django.db.models import Model, CharField, ForeignKey, DecimalField, ImageFi
 from django.db.models.fields import SlugField
 from django.utils.text import slugify
 
-
 class CustomUserManager(UserManager):
     def _create_user(self,phone_number, password, **extra_fields):
 

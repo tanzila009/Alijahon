@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.http import JsonResponse
 # from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -11,7 +12,7 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, ListView, DetailView
 
 from apps.forms import AuthForm, ProfileForm, ChangePasswordForm, OrderForm
-from apps.models import User, District, Region, Category, Product, Wishlist, AdminSetting
+from apps.models import User, District, Region, Category, Product, Wishlist, AdminSetting, Order
 
 
 class AuthView(FormView):
@@ -134,12 +135,20 @@ class ProductListView(ListView):
         slug = self.kwargs.get('slug')
         category = Category.objects.filter(slug=slug).first()
         data = super().get_context_data(object_list=object_list, **kwargs)
+        products = Product.objects.all()
         if slug != 'all':
-            data['products'] = Product.objects.filter(category=category)
+            products = products.filter(category=category)
+        # ----------- SEARCH ---------------
+        query = self.request.GET.get("query")
+        if query:
+            products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+        data['products'] = products
+        # ------------- SEARCH-------------
+        data['categories'] = Category.objects.all()
         if self.request.user.is_authenticated:
             data['liked_products_id'] = Wishlist.objects.filter(user_id=self.request.user).values_list("product_id",
                                                                                                    flat=True)
-        data['categories'] = Category.objects.all()
         data['session_category'] = category
         return data
 
@@ -189,3 +198,24 @@ class OrderFormView(FormView):
 
     def form_invalid(self, form):
         pass
+
+class ProductSearchView(View):
+    def post(self, request):
+        query = request.GET.get('query')
+        products = Product.objects.filter(Q(name__icontains=query) |Q(description__icontains = query))
+        return render(request, '')
+
+
+class OrderListView(ListView):
+    login_url = reverse_lazy('login')
+    queryset = Order.objects.all()
+    template_name = 'apps/order/order-list.html'
+    context_object_name = 'orders'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        data = super().get_context_data(object_list=object_list, **kwargs)
+        data['orders'] = data.get('orders').filter(owner=self.request.user)
+        return data
+
+
+
